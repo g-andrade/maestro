@@ -7,8 +7,8 @@
          start_link/1, start_link/2,
          child_spec/3,
          stop/1, status/1,
-
-         pool_checkout/1, pool_checkout/2, pool_checkout/3, pool_checkin/2,
+         pool_checkout/1, pool_checkout/2, pool_checkout/3,
+         pool_checkin/2,
          pool_transaction/2, pool_transaction/3,
          pool_status/1]).
 
@@ -16,6 +16,17 @@
               maestro_ref/0,
               pool_ref/0]).
 
+-ignore_xref([{pick_pool, 1},
+              {checkout, 1}, {checkout, 2}, {checkout, 3},
+              {transaction, 2}, {transaction, 3},
+              {start, 1}, {start, 2},
+              {start_link, 1}, {start_link, 2},
+              {child_spec, 3},
+              {stop, 1}, {status, 1},
+              {pool_checkout, 1}, {pool_checkout, 2}, {pool_checkout, 3},
+              {pool_checkin, 2},
+              {pool_transaction, 2}, {pool_transaction, 3},
+              {pool_status, 1}]).
 
 -type maestro() :: maestro_serv:maestro().
 -type maestro_ref() :: maestro_serv:maestro_ref().

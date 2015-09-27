@@ -7,9 +7,8 @@
          handle_cast/2,
          handle_info/2,
          terminate/2,
-         code_change/3]).
-
--export([pick_pool/1,
+         code_change/3,
+         pick_pool/1,
          all_pools/1,
          stop/1,
          start_maestro/3,
@@ -19,6 +18,8 @@
               maestro_ref/0,
               pool_ref/0,
               start_ret/0]).
+
+-ignore_xref([{start_managed_pool, 4}]).
 
 
 -record(pool, {

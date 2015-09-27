@@ -33,5 +33,5 @@ build-plt: .dialyzer_plt
 dialyze: build-plt
 	@$(DIALYZER) --src src --plt .dialyzer_plt $(DIALYZER_WARNINGS)
 
-xref:
+xref: clean compile
 	@$(REBAR) xref
