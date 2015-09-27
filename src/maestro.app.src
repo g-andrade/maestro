@@ -1,0 +1,10 @@
+% vim: set expandtab softtabstop=4 shiftwidth=2:
+{application, maestro, [
+    {description, "An Erlang pool of worker pools."},
+    {vsn, "1.0.0"},
+    {applications, [
+        kernel,
+        stdlib
+        ]},
+    {registered, [maestro]}
+    ]}.
