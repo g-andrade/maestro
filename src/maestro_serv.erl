@@ -22,30 +22,28 @@
 
 
 -record(pool, {
-        pid :: pid()
-        }).
-
+        pid :: pid(),
+        module :: module() }).
 
 -record(monitored_pool, {
         pid :: pid(),
-        monitor :: reference()
-        }).
+        monitor :: reference() }).
 
 -record(state, {
         pool_count = 1 :: non_neg_integer(),
         pool_args = [] :: proplists:proplist(),
+        pool_module = poolboy :: module(),
         monitored_pools = [] :: [#monitored_pool{}],
         name = maestro :: atom(),
-        use_named_pools = true :: boolean()
-        }).
+        use_named_pools = false :: boolean() }).
 
 -type maestro() :: atom().
 -type maestro_ref() :: maestro() | pid().
--type pool_ref() :: pid().
+-type pool_ref() :: {module(), pid()}.
 -type start_ret() :: {'ok', pid()} | 'ignore' | {'error', term()}.
 
 
--spec start_maestro(StartFun::start | start_link,
+-spec start_maestro(StartFun :: start | start_link,
                     MaestroArgs :: proplists:proplist(),
                     WorkerArgs :: proplists:proplist()) -> start_ret().
 start_maestro(StartFun, MaestroArgs, WorkerArgs) ->
@@ -56,23 +54,23 @@ start_maestro(StartFun, MaestroArgs, WorkerArgs) ->
     end,
     gen_server:StartFun({local, Name}, maestro_serv, {MaestroArgs, WorkerArgs}, []).
 
--spec register_pool(MaestroRef::maestro_ref(), PoolPid::pid()) -> ok.
+-spec register_pool(MaestroRef :: maestro_ref(), PoolPid :: pid()) -> ok.
 register_pool(MaestroRef, PoolPid) ->
     gen_server:cast(MaestroRef, {register_pool, PoolPid}).
 
--spec pick_pool(Maestro::maestro()) -> PoolRef::pool_ref().
+-spec pick_pool(Maestro :: maestro()) -> PoolRef :: pool_ref().
 pick_pool(Maestro) ->
     Pools = ets:tab2list(Maestro),
     PoolIdx = 1 + erlang:phash2({self(), os:timestamp()}, length(Pools)),
-    #pool{ pid=PoolPid } = lists:nth(PoolIdx, Pools),
+    #pool{ pid=PoolPid, module=PoolModule } = lists:nth(PoolIdx, Pools),
     true = is_pid(PoolPid) orelse exit({'no pools available', Maestro}),
-    PoolPid.
+    {PoolModule, PoolPid}.
 
--spec all_pools(Maestro::maestro()) -> [pid()].
+-spec all_pools(Maestro :: maestro()) -> [pool_ref()].
 all_pools(Maestro) ->
-    [PoolPid || #pool{ pid=PoolPid } <- ets:tab2list(Maestro)].
+    [{Module, Pid} || #pool{ pid=Pid, module=Module } <- ets:tab2list(Maestro)].
 
--spec stop(MaestroRef::maestro_ref()) -> ok.
+-spec stop(MaestroRef :: maestro_ref()) -> ok.
 stop(MaestroRef) ->
     ok = gen_server:call(MaestroRef, stop).
 
@@ -100,6 +98,8 @@ init([{name, Name} | Rest], WorkerArgs, State) ->
     init(Rest, WorkerArgs, State#state{name = Name});
 init([{pool_count, PoolCount} | Rest], WorkerArgs, State) ->
     init(Rest, WorkerArgs, State#state{pool_count = PoolCount});
+init([{pool_module, PoolModule} | Rest], WorkerArgs, State) ->
+    init(Rest, WorkerArgs, State#state{pool_module = PoolModule});
 init([{use_named_pools, UseNamedPools} | Rest], WorkerArgs, State) ->
     init(Rest, WorkerArgs, State#state{use_named_pools = UseNamedPools});
 init([OtherArg | Rest], WorkerArgs, State) ->
@@ -108,7 +108,8 @@ init([], WorkerArgs, #state{} = State) ->
     #state{pool_count=PoolCount,
            pool_args=PoolArgs,
            name=Name,
-           use_named_pools=UseNamedPools }=State,
+           use_named_pools=UseNamedPools,
+           pool_module=PoolModule }=State,
 
     Name = ets:new(Name, [set, protected, named_table,
                           {keypos, #pool.pid},
@@ -118,7 +119,8 @@ init([], WorkerArgs, #state{} = State) ->
         true  -> {named_pools, Name};
         false -> anonymous_pools
     end,
-    Children = pool_child_specs(self(), NamedPoolsSetting, PoolCount, PoolArgs, WorkerArgs),
+    Children = pool_child_specs(self(), NamedPoolsSetting, PoolCount,
+                                PoolModule, PoolArgs, WorkerArgs),
     {ok, _PoolSupervisorPid} = maestro_pool_sup:start_link(Children),
     {ok, State}.
 
@@ -130,10 +132,11 @@ handle_call(_Request, _From, #state{}=State) ->
     {noreply, State}.
 
 
-handle_cast({register_pool, PoolPid}, #state{ name=Name }=State)
+handle_cast({register_pool, PoolPid}, #state{ name=Name, pool_module=PoolModule }=State)
         when is_pid(PoolPid), PoolPid /= self()
 ->
-    Pool = #pool{pid = PoolPid},
+    Pool = #pool{pid = PoolPid,
+                 module = PoolModule},
     true = ets:insert(Name, Pool),
     MonitoredPool = #monitored_pool{pid = PoolPid,
                                     monitor = monitor(process, PoolPid)},
@@ -173,9 +176,9 @@ code_change(_OldVsn, State, _Extra) ->
 -spec pool_child_specs(MaestroPid :: pid(),
                        PoolNameSetting :: {use_named_pools, BaseName::atom()} | anonymous_pools,
                        PoolCount :: pos_integer(),
-                       BasePoolArgs :: proplists:proplist(), WorkerArgs :: proplists:proplist())
+                       PoolModule :: module(), BasePoolArgs :: proplists:proplist(), WorkerArgs :: proplists:proplist())
         -> [supervisor:child_spec()].
-pool_child_specs(MaestroPid, PoolNameSetting, PoolCount, BasePoolArgs, WorkerArgs) ->
+pool_child_specs(MaestroPid, PoolNameSetting, PoolCount, PoolModule, BasePoolArgs, WorkerArgs) ->
     lists:map(
         fun (Index) ->
                 ChildId = list_to_atom("pool_" ++ integer_to_list(Index)),
@@ -189,7 +192,7 @@ pool_child_specs(MaestroPid, PoolNameSetting, PoolCount, BasePoolArgs, WorkerArg
 
                 % Let's wrap the underlying start function in our own
                 % so that we can generically notify the maestro.
-                ChildSpec = poolboy:child_spec(ChildId, PoolArgs, WorkerArgs),
+                ChildSpec = PoolModule:child_spec(ChildId, PoolArgs, WorkerArgs),
                 {Id, {M, F, A}, Restart, Shutdown, Type, Modules }=ChildSpec,
                 {Id, {?MODULE, start_managed_pool, [MaestroPid, M, F, A]},
                  Restart, Shutdown, Type, Modules}
