@@ -9,14 +9,13 @@ __Version:__ 1.0.0
 __Authors:__ Guilherme Andrade ([`g@gandrade.net`](mailto:g@gandrade.net)).
 
 `maestro`: a pool of pools for when single pool managers become a bottleneck.
-
 ---------
 
 
 ### <a name="Why?">Why?</a> ###
 
 
-Big worker pools for short-lived I/O tasks (e.g. database access) can easily overrun a single `poolboy` manager due to too much check-in / check-out activity.
+Big worker pools for short-lived I/O tasks (e.g. database access) can easily overrun a single `poolboy` manager due to too many check-in / check-out activity.
 
 
 ### <a name="How?">How?</a> ###
@@ -62,7 +61,7 @@ ok = maestro:stop(MaestroName).
 
 
 <table width="100%" border="0" summary="list of modules">
-<tr><td><a href="https://github.com/g-andrade/maestro/blob/develop/doc/maestro.md" class="module">maestro</a></td></tr>
-<tr><td><a href="https://github.com/g-andrade/maestro/blob/develop/doc/maestro_pool_sup.md" class="module">maestro_pool_sup</a></td></tr>
-<tr><td><a href="https://github.com/g-andrade/maestro/blob/develop/doc/maestro_serv.md" class="module">maestro_serv</a></td></tr></table>
+<tr><td><a href="maestro.md" class="module">maestro</a></td></tr>
+<tr><td><a href="maestro_pool_sup.md" class="module">maestro_pool_sup</a></td></tr>
+<tr><td><a href="maestro_serv.md" class="module">maestro_serv</a></td></tr></table>
 

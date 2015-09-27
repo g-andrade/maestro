@@ -1,0 +1,174 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Module maestro</title>
+<link rel="stylesheet" type="text/css" href="stylesheet.css" title="EDoc">
+</head>
+<body bgcolor="white">
+<div class="navbar"><a name="#navbar_top"></a><table width="100%" border="0" cellspacing="0" cellpadding="2" summary="navigation bar"><tr><td><a href="overview-summary.html" target="overviewFrame">Overview</a></td><td><a href="http://www.erlang.org/"><img src="erlang.png" align="right" border="0" alt="erlang logo"></a></td></tr></table></div>
+<hr>
+
+<h1>Module maestro</h1>
+<ul class="index"><li><a href="#types">Data Types</a></li><li><a href="#index">Function Index</a></li><li><a href="#functions">Function Details</a></li></ul>
+
+
+<h2><a name="types">Data Types</a></h2>
+
+<h3 class="typedecl"><a name="type-maestro">maestro()</a></h3>
+<p><tt>maestro() = <a href="maestro_serv.html#type-maestro">maestro_serv:maestro()</a></tt></p>
+
+
+<h3 class="typedecl"><a name="type-maestro_ref">maestro_ref()</a></h3>
+<p><tt>maestro_ref() = <a href="maestro_serv.html#type-maestro_ref">maestro_serv:maestro_ref()</a></tt></p>
+
+
+<h3 class="typedecl"><a name="type-pool_ref">pool_ref()</a></h3>
+<p><tt>pool_ref() = <a href="maestro_serv.html#type-pool_ref">maestro_serv:pool_ref()</a></tt></p>
+
+
+<h3 class="typedecl"><a name="type-start_ret">start_ret()</a></h3>
+<p><tt>start_ret() = <a href="maestro_serv.html#type-start_ret">maestro_serv:start_ret()</a></tt></p>
+
+
+<h2><a name="index">Function Index</a></h2>
+<table width="100%" border="1" cellspacing="0" cellpadding="2" summary="function index"><tr><td valign="top"><a href="#checkout-1">checkout/1</a></td><td>Pick a pool and check-out one worker.</td></tr>
+<tr><td valign="top"><a href="#checkout-2">checkout/2</a></td><td>Pick a pool and check-out one worker; optional block.</td></tr>
+<tr><td valign="top"><a href="#checkout-3">checkout/3</a></td><td>Pick a pool and check-out one worker; optional block and check-out timeout.</td></tr>
+<tr><td valign="top"><a href="#child_spec-3">child_spec/3</a></td><td></td></tr>
+<tr><td valign="top"><a href="#pick_pool-1">pick_pool/1</a></td><td>Throw some dice.</td></tr>
+<tr><td valign="top"><a href="#pool_checkin-2">pool_checkin/2</a></td><td>Check in a particular worker into an arbitrary pool.</td></tr>
+<tr><td valign="top"><a href="#pool_checkout-1">pool_checkout/1</a></td><td>Check-out one worker from an arbitrary pool.</td></tr>
+<tr><td valign="top"><a href="#pool_checkout-2">pool_checkout/2</a></td><td>Check-out one worker from an arbitrary pool; optional block.</td></tr>
+<tr><td valign="top"><a href="#pool_checkout-3">pool_checkout/3</a></td><td>Check-out one worker from an arbitrary pool; optional block and check-out timeout.</td></tr>
+<tr><td valign="top"><a href="#pool_status-1">pool_status/1</a></td><td>Run a single function in-between a check-out and a check-in; optional check-out timeout.</td></tr>
+<tr><td valign="top"><a href="#pool_transaction-2">pool_transaction/2</a></td><td></td></tr>
+<tr><td valign="top"><a href="#pool_transaction-3">pool_transaction/3</a></td><td>Run a single function in-between a check-out and a check-in.</td></tr>
+<tr><td valign="top"><a href="#start-1">start/1</a></td><td></td></tr>
+<tr><td valign="top"><a href="#start-2">start/2</a></td><td></td></tr>
+<tr><td valign="top"><a href="#start_link-1">start_link/1</a></td><td></td></tr>
+<tr><td valign="top"><a href="#start_link-2">start_link/2</a></td><td></td></tr>
+<tr><td valign="top"><a href="#status-1">status/1</a></td><td></td></tr>
+<tr><td valign="top"><a href="#stop-1">stop/1</a></td><td></td></tr>
+<tr><td valign="top"><a href="#transaction-2">transaction/2</a></td><td>Pick a pool and run a single function in-between a check-out and a check-in.</td></tr>
+<tr><td valign="top"><a href="#transaction-3">transaction/3</a></td><td>Pick a pool and run a single function in-between a check-out and a check-in; optional check-out timeout.</td></tr>
+</table>
+
+<h2><a name="functions">Function Details</a></h2>
+
+<h3 class="function"><a name="checkout-1">checkout/1</a></h3>
+<div class="spec">
+<p><tt>checkout(Maestro::<a href="#type-maestro">maestro()</a>) -&gt; {<a href="#type-pool_ref">pool_ref()</a>, pid()}</tt><br></p>
+</div><p>Pick a pool and check-out one worker.
+ </p>
+
+<h3 class="function"><a name="checkout-2">checkout/2</a></h3>
+<div class="spec">
+<p><tt>checkout(Maestro::<a href="#type-maestro">maestro()</a>, Block::boolean()) -&gt; {<a href="#type-pool_ref">pool_ref()</a>, pid()} | full</tt><br></p>
+</div><p>Pick a pool and check-out one worker; optional block.
+ </p>
+
+<h3 class="function"><a name="checkout-3">checkout/3</a></h3>
+<div class="spec">
+<p><tt>checkout(Maestro::<a href="#type-maestro">maestro()</a>, Block::boolean(), Timeout::timeout()) -&gt; {<a href="#type-pool_ref">pool_ref()</a>, pid()} | full</tt><br></p>
+</div><p>Pick a pool and check-out one worker; optional block and check-out timeout.
+ </p>
+
+<h3 class="function"><a name="child_spec-3">child_spec/3</a></h3>
+<div class="spec">
+<p><tt>child_spec(Id::term(), MaestroArgs::<a href="proplists.html#type-proplist">proplists:proplist()</a>, WorkerArgs::<a href="proplists.html#type-proplist">proplists:proplist()</a>) -&gt; <a href="supervisor.html#type-child_spec">supervisor:child_spec()</a></tt><br></p>
+</div>
+
+<h3 class="function"><a name="pick_pool-1">pick_pool/1</a></h3>
+<div class="spec">
+<p><tt>pick_pool(Maestro::<a href="#type-maestro">maestro()</a>) -&gt; <a href="#type-pool_ref">pool_ref()</a></tt><br></p>
+</div><p>Throw some dice.</p>
+
+<h3 class="function"><a name="pool_checkin-2">pool_checkin/2</a></h3>
+<div class="spec">
+<p><tt>pool_checkin(PoolRef::<a href="#type-pool_ref">pool_ref()</a>, Worker::pid()) -&gt; ok</tt><br></p>
+</div><p>Check in a particular worker into an arbitrary pool.
+ </p>
+
+<h3 class="function"><a name="pool_checkout-1">pool_checkout/1</a></h3>
+<div class="spec">
+<p><tt>pool_checkout(PoolRef::<a href="#type-pool_ref">pool_ref()</a>) -&gt; pid()</tt><br></p>
+</div><p>Check-out one worker from an arbitrary pool.
+ </p>
+
+<h3 class="function"><a name="pool_checkout-2">pool_checkout/2</a></h3>
+<div class="spec">
+<p><tt>pool_checkout(PoolRef::<a href="#type-pool_ref">pool_ref()</a>, Block::boolean()) -&gt; pid() | full</tt><br></p>
+</div><p>Check-out one worker from an arbitrary pool; optional block.
+ </p>
+
+<h3 class="function"><a name="pool_checkout-3">pool_checkout/3</a></h3>
+<div class="spec">
+<p><tt>pool_checkout(PoolRef::<a href="#type-pool_ref">pool_ref()</a>, Block::boolean(), Timeout::timeout()) -&gt; <a href="#type-pool_ref">pool_ref()</a> | full</tt><br></p>
+</div><p>Check-out one worker from an arbitrary pool; optional block and check-out timeout.
+ </p>
+
+<h3 class="function"><a name="pool_status-1">pool_status/1</a></h3>
+<div class="spec">
+<p><tt>pool_status(PoolRef::<a href="#type-pool_ref">pool_ref()</a>) -&gt; {atom(), integer(), integer(), integer()}</tt><br></p>
+</div><p>Run a single function in-between a check-out and a check-in; optional check-out timeout.
+ </p>
+
+<h3 class="function"><a name="pool_transaction-2">pool_transaction/2</a></h3>
+<div class="spec">
+<p><tt>pool_transaction(PoolRef::<a href="#type-pool_ref">pool_ref()</a>, Fun::fun((Worker::pid()) -&gt; any())) -&gt; any()</tt><br></p>
+</div>
+
+<h3 class="function"><a name="pool_transaction-3">pool_transaction/3</a></h3>
+<div class="spec">
+<p><tt>pool_transaction(PoolRef::<a href="#type-pool_ref">pool_ref()</a>, Fun::fun((Worker::pid()) -&gt; any()), Timeout::timeout()) -&gt; any()</tt><br></p>
+</div><p>Run a single function in-between a check-out and a check-in.
+ </p>
+
+<h3 class="function"><a name="start-1">start/1</a></h3>
+<div class="spec">
+<p><tt>start(MaestroArgs::<a href="proplists.html#type-proplist">proplists:proplist()</a>) -&gt; <a href="#type-start_ret">start_ret()</a></tt><br></p>
+</div>
+
+<h3 class="function"><a name="start-2">start/2</a></h3>
+<div class="spec">
+<p><tt>start(MaestroArgs::<a href="proplists.html#type-proplist">proplists:proplist()</a>, WorkerArgs::<a href="proplists.html#type-proplist">proplists:proplist()</a>) -&gt; <a href="#type-start_ret">start_ret()</a></tt><br></p>
+</div>
+
+<h3 class="function"><a name="start_link-1">start_link/1</a></h3>
+<div class="spec">
+<p><tt>start_link(MaestroArgs::<a href="proplists.html#type-proplist">proplists:proplist()</a>) -&gt; <a href="#type-start_ret">start_ret()</a></tt><br></p>
+</div>
+
+<h3 class="function"><a name="start_link-2">start_link/2</a></h3>
+<div class="spec">
+<p><tt>start_link(MaestroArgs::<a href="proplists.html#type-proplist">proplists:proplist()</a>, WorkerArgs::<a href="proplists.html#type-proplist">proplists:proplist()</a>) -&gt; <a href="#type-start_ret">start_ret()</a></tt><br></p>
+</div>
+
+<h3 class="function"><a name="status-1">status/1</a></h3>
+<div class="spec">
+<p><tt>status(Maestro::<a href="#type-maestro">maestro()</a>) -&gt; [{atom(), integer(), integer(), integer()}]</tt><br></p>
+</div>
+
+<h3 class="function"><a name="stop-1">stop/1</a></h3>
+<div class="spec">
+<p><tt>stop(MaestroRef::<a href="#type-maestro_ref">maestro_ref()</a>) -&gt; ok</tt><br></p>
+</div>
+
+<h3 class="function"><a name="transaction-2">transaction/2</a></h3>
+<div class="spec">
+<p><tt>transaction(Maestro::<a href="#type-maestro">maestro()</a>, Fun::fun((Worker::pid()) -&gt; any())) -&gt; any()</tt><br></p>
+</div><p>Pick a pool and run a single function in-between a check-out and a check-in.
+ </p>
+
+<h3 class="function"><a name="transaction-3">transaction/3</a></h3>
+<div class="spec">
+<p><tt>transaction(Maestro::<a href="#type-maestro">maestro()</a>, Fun::fun((Worker::pid()) -&gt; any()), Timeout::timeout()) -&gt; any()</tt><br></p>
+</div><p>Pick a pool and run a single function in-between a check-out and a check-in; optional check-out timeout.
+ </p>
+<hr>
+
+<div class="navbar"><a name="#navbar_bottom"></a><table width="100%" border="0" cellspacing="0" cellpadding="2" summary="navigation bar"><tr><td><a href="overview-summary.html" target="overviewFrame">Overview</a></td><td><a href="http://www.erlang.org/"><img src="erlang.png" align="right" border="0" alt="erlang logo"></a></td></tr></table></div>
+<p><i>Generated by EDoc, Sep 27 2015, 17:13:58.</i></p>
+</body>
+</html>

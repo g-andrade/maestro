@@ -33,15 +33,18 @@
 -type pool_ref() :: maestro_serv:pool_ref().
 -type start_ret() :: maestro_serv:start_ret().
 
-
 % poolboy-inspired interface.
 
 
+%% @doc Pick a pool and check-out one worker.
+%%
 -spec checkout(Maestro :: maestro()) -> {pool_ref(), pid()}.
 checkout(Maestro) ->
     PoolRef = pick_pool(Maestro),
     {PoolRef, pool_checkout(PoolRef)}.
 
+%% @doc Pick a pool and check-out one worker; optional block.
+%%
 -spec checkout(Maestro :: maestro(), Block :: boolean()) -> {pool_ref(), pid()} | full.
 checkout(Maestro, Block) ->
     PoolRef = pick_pool(Maestro),
@@ -50,6 +53,8 @@ checkout(Maestro, Block) ->
         WorkerPid -> {PoolRef, WorkerPid}
     end.
 
+%% @doc Pick a pool and check-out one worker; optional block and check-out timeout.
+%%
 -spec checkout(Maestro :: maestro(), Block :: boolean(), Timeout :: timeout())
     -> {pool_ref(), pid()} | full.
 checkout(Maestro, Block, Timeout) ->
@@ -59,12 +64,16 @@ checkout(Maestro, Block, Timeout) ->
         WorkerPid -> {PoolRef, WorkerPid}
     end.
 
+%% @doc Pick a pool and run a single function in-between a check-out and a check-in.
+%%
 -spec transaction(Maestro :: maestro(), Fun :: fun((Worker :: pid()) -> any()))
     -> any().
 transaction(Maestro, Fun) ->
     PoolRef = pick_pool(Maestro),
     pool_transaction(PoolRef, Fun).
 
+%% @doc Pick a pool and run a single function in-between a check-out and a check-in; optional check-out timeout.
+%%
 -spec transaction(Maestro :: maestro(), Fun :: fun((Worker :: pid()) -> any()),
                   Timeout :: timeout()) -> any().
 transaction(Maestro, Fun, Timeout) ->
@@ -111,24 +120,33 @@ status(Maestro) ->
     PoolRefs = maestro_serv:all_pools(Maestro),
     [pool_status(PoolRef) || PoolRef <- PoolRefs].
 
+%% @doc Throw some dice.
 -spec pick_pool(Maestro :: maestro()) -> pool_ref().
 pick_pool(Maestro) ->
     maestro_serv:pick_pool(Maestro).
 
 
+%% @doc Check-out one worker from an arbitrary pool.
+%%
 -spec pool_checkout(PoolRef :: pool_ref()) -> pid().
 pool_checkout({Module, Pool}) ->
     Module:checkout(Pool).
 
+%% @doc Check-out one worker from an arbitrary pool; optional block.
+%%
 -spec pool_checkout(PoolRef :: pool_ref(), Block :: boolean()) -> pid() | full.
 pool_checkout({Module, Pool}, Block) ->
     Module:checkout(Pool, Block).
 
+%% @doc Check-out one worker from an arbitrary pool; optional block and check-out timeout.
+%%
 -spec pool_checkout(PoolRef :: pool_ref(), Block :: boolean(), Timeout :: timeout())
     -> pool_ref() | full.
 pool_checkout({Module, Pool}, Block, Timeout) ->
     Module:checkout(Pool, Block, Timeout).
 
+%% @doc Check in a particular worker into an arbitrary pool.
+%%
 -spec pool_checkin(PoolRef :: pool_ref(), Worker :: pid()) -> ok.
 pool_checkin({Module, Pool}, Worker) when is_pid(Worker) ->
     Module:checkin(Pool, Worker).
@@ -138,11 +156,15 @@ pool_checkin({Module, Pool}, Worker) when is_pid(Worker) ->
 pool_transaction({Module, Pool}, Fun) ->
     Module:transaction(Pool, Fun).
 
+%% @doc Run a single function in-between a check-out and a check-in.
+%%
 -spec pool_transaction(PoolRef :: pool_ref(), Fun :: fun((Worker :: pid()) -> any()),
                        Timeout :: timeout()) -> any().
 pool_transaction({Module, Pool}, Fun, Timeout) ->
     Module:transaction(Pool, Fun, Timeout).
 
+%% @doc Run a single function in-between a check-out and a check-in; optional check-out timeout.
+%%
 -spec pool_status(PoolRef :: pool_ref()) -> {atom(), integer(), integer(), integer()}.
 pool_status({Module, Pool}) ->
     Module:status(Pool).
